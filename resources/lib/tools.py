@@ -4,6 +4,7 @@ import socket
 import json
 import random
 import hashlib
+
 NOSE = os.environ.get('NOSE', None)
 if not NOSE:
   import xbmc
@@ -103,9 +104,11 @@ class Light:
     self.s = requests.Session()
 
   def request_url_put(self, url, data):
-    if self.start_setting['on']:
+    #th
+    #if self.start_setting['on']:
       try:
-        self.s.put(url, data=data)
+        # self.s.put(url, data=data)
+        r = requests.put(url, data=data)
       except:
         self.logger.debuglog("exception in request_url_put")
         pass # probably a timeout
@@ -201,6 +204,28 @@ class Light:
     data += "}"
     self.set_light(data)
 
+  #th
+  def light_to_start_setting(self):
+    if self.start_setting['on']:
+      data = '{"on":true,"transitiontime":%d' % (self.dim_time)
+      data += ',"bri":%s' % self.start_setting['bri']
+      self.valLast = self.start_setting['bri']
+      data += ',"hue":%s' % self.start_setting['hue']
+      self.hueLast = self.start_setting['hue']
+      if not self.livingwhite:
+        data += ',"sat":%s' % self.start_setting['sat']
+        self.satLast = self.start_setting['sat']
+      data += "}"
+      self.logger.debuglog("class Light: returning light to start setting")
+      self.set_light(data)
+    else:
+      self.logger.debuglog("class Light: returning light to off")
+      data = '{"on":true,"transitiontime":15,"bri":8}'
+      self.set_light(data)
+      time.sleep(15/10)
+      data = '{"on":false}'
+      self.set_light(data)
+
 class Group(Light):
   group = True
   lights = {}
@@ -272,7 +297,8 @@ class Group(Light):
 
   def request_url_put(self, url, data):
     try:
-      self.s.put(url, data=data)
+      # self.s.put(url, data=data)
+	  r = requests.put(url, data=data)
     except Exception as e:
       # probably a timeout
       self.logger.debuglog("WARNING: Request fo bridge failed")

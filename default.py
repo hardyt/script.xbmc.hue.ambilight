@@ -177,6 +177,19 @@ class Hue:
         xbmc.sleep(1)
         self.light[2].brighter_light()
 
+  #th
+  def lights_to_start_setting(self):
+    self.logger.debuglog("class Hue: returning lights to start setting")
+    if self.settings.light == 0:
+      self.light.light_to_start_setting()
+    else:
+      self.light[0].light_to_start_setting()
+      if self.settings.light > 1:
+        xbmc.sleep(1)
+        self.light[1].light_to_start_setting()
+      if self.settings.light > 2:
+        xbmc.sleep(1)
+        self.light[2].light_to_start_setting()
 
   def update_settings(self):
     self.logger.debuglog("class Hue: update settings")
@@ -448,7 +461,9 @@ def state_changed(state, duration):
         hue.dim_group.brighter_light()
         time.sleep(1)
     else:
-      hue.brighter_lights()
+      #th
+      #hue.brighter_lights()
+      hue.lights_to_start_setting()
 
 if ( __name__ == "__main__" ):
   settings = settings()
